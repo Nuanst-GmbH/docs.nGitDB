@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Roadmap and Limits | nGitDB</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Roadmap and Limits" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<link rel="canonical" href="https://github.com/pages/Nuanst-GmbH/nGitDB/roadmap-and-limits.html" />
+<meta property="og:url" content="https://github.com/pages/Nuanst-GmbH/nGitDB/roadmap-and-limits.html" />
+<meta property="og:site_name" content="nGitDB" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Roadmap and Limits" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Roadmap and Limits","url":"https://github.com/pages/Nuanst-GmbH/nGitDB/roadmap-and-limits.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/pages/Nuanst-GmbH/nGitDB/assets/css/style.css?v=4b7d663b27acbe9e73fe2fe586bb6791ab6891bc">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/pages/Nuanst-GmbH/nGitDB/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://github.com/pages/Nuanst-GmbH/nGitDB/">nGitDB</a></h1>
+      
+
+      <h1 id="roadmap-and-limits">Roadmap and Limits</h1>
+
+<p>nGitDB V1 is intentionally narrow. The goal is a dependable structured write layer for reviewable Git-backed JSON workflows, not a general-purpose database or content platform.</p>
+
+<h2 id="current-limits">Current Limits</h2>
+
+<ul>
+  <li>JSON documents only</li>
+  <li>resource paths must use <code class="language-plaintext highlighter-rouge">&lt;collection&gt;/&lt;id&gt;</code></li>
+  <li>one file per resource</li>
+  <li>no query API</li>
+  <li>no direct default-branch writes</li>
+  <li>no multi-file transaction support</li>
+  <li>no conflict-resolution UI</li>
+  <li>no hosted service layer</li>
+</ul>
+
+<h2 id="current-implementation-notes">Current Implementation Notes</h2>
+
+<p>The current package implements the workflow primitives using a local repository root:</p>
+
+<ul>
+  <li>reads JSON files from the configured repository root</li>
+  <li>stages patched documents in memory</li>
+  <li>writes commit artifacts under <code class="language-plaintext highlighter-rouge">.ngitdb/sessions/&lt;branch-name&gt;/</code></li>
+  <li>returns pull request draft metadata</li>
+</ul>
+
+<p>Direct GitHub commit creation and direct GitHub pull request creation are product-direction items, not behavior provided by the current local workflow implementation.</p>
+
+<h2 id="v1-direction">V1 Direction</h2>
+
+<p>The V1 product direction is:</p>
+
+<ul>
+  <li>GitHub-backed JSON resources</li>
+  <li>branch-based session isolation</li>
+  <li>deterministic patch application</li>
+  <li>schema validation before commit</li>
+  <li>field ownership enforcement</li>
+  <li>review through pull requests</li>
+  <li>explicit typed errors</li>
+</ul>
+
+<h2 id="deferred-ideas">Deferred Ideas</h2>
+
+<p>These are intentionally deferred until the core workflow is proven useful:</p>
+
+<ul>
+  <li>query layer</li>
+  <li>multi-repository support</li>
+  <li>multi-file transactions</li>
+  <li>conflict-resolution UI</li>
+  <li>GitHub App packaging</li>
+  <li>hosted control plane</li>
+  <li>plugin system</li>
+</ul>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

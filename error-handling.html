@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Error Handling | nGitDB</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Error Handling" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<link rel="canonical" href="https://github.com/pages/Nuanst-GmbH/nGitDB/error-handling.html" />
+<meta property="og:url" content="https://github.com/pages/Nuanst-GmbH/nGitDB/error-handling.html" />
+<meta property="og:site_name" content="nGitDB" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Error Handling" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Error Handling","url":"https://github.com/pages/Nuanst-GmbH/nGitDB/error-handling.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/pages/Nuanst-GmbH/nGitDB/assets/css/style.css?v=4b7d663b27acbe9e73fe2fe586bb6791ab6891bc">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/pages/Nuanst-GmbH/nGitDB/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://github.com/pages/Nuanst-GmbH/nGitDB/">nGitDB</a></h1>
+      
+
+      <h1 id="error-handling">Error Handling</h1>
+
+<p>nGitDB exposes explicit error classes so application code can handle safety failures without string matching.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span>
+  <span class="nx">GitDBError</span><span class="p">,</span>
+  <span class="nx">OwnershipViolationError</span><span class="p">,</span>
+  <span class="nx">SessionMisuseError</span><span class="p">,</span>
+  <span class="nx">ValidationFailureError</span><span class="p">,</span>
+<span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">ngitdb</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="base-error">Base Error</h2>
+
+<p>All library errors extend:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">GitDBError</span>
+</code></pre></div></div>
+
+<h2 id="resource-errors">Resource Errors</h2>
+
+<p><code class="language-plaintext highlighter-rouge">InvalidResourcePathError</code> is thrown when a resource path is not in <code class="language-plaintext highlighter-rouge">&lt;collection&gt;/&lt;id&gt;</code> format.</p>
+
+<p><code class="language-plaintext highlighter-rouge">ResourceDefinitionError</code> is thrown when the collection is not configured.</p>
+
+<p><code class="language-plaintext highlighter-rouge">ResourceNotFoundError</code> is thrown when the resolved JSON file does not exist.</p>
+
+<h2 id="session-errors">Session Errors</h2>
+
+<p><code class="language-plaintext highlighter-rouge">SessionMisuseError</code> is thrown when a workflow method is called at the wrong time.</p>
+
+<p>Examples:</p>
+
+<ul>
+  <li>calling <code class="language-plaintext highlighter-rouge">patch(...)</code> before <code class="language-plaintext highlighter-rouge">startSession(...)</code></li>
+  <li>calling <code class="language-plaintext highlighter-rouge">commit(...)</code> without staged changes</li>
+  <li>calling <code class="language-plaintext highlighter-rouge">createPullRequest(...)</code> before a commit</li>
+</ul>
+
+<h2 id="ownership-errors">Ownership Errors</h2>
+
+<p><code class="language-plaintext highlighter-rouge">OwnershipViolationError</code> is thrown when a patch targets a field that is not machine-owned.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">legalName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">New Name GmbH</span><span class="dl">"</span><span class="p">,</span>
+  <span class="p">});</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span> <span class="k">instanceof</span> <span class="nx">OwnershipViolationError</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">resourcePath</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">fieldPath</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">owner</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="validation-errors">Validation Errors</h2>
+
+<p><code class="language-plaintext highlighter-rouge">ValidationFailureError</code> is thrown when a resource validator returns issues during commit.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">"</span><span class="s2">Commit staged changes</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span> <span class="k">instanceof</span> <span class="nx">ValidationFailureError</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">resourcePath</span><span class="p">);</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">issues</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="recommended-pattern">Recommended Pattern</h2>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">"</span><span class="s2">Update enrichment fields</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span> <span class="k">instanceof</span> <span class="nx">ValidationFailureError</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="na">ok</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="na">reason</span><span class="p">:</span> <span class="dl">"</span><span class="s2">validation_failed</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">issues</span><span class="p">:</span> <span class="nx">error</span><span class="p">.</span><span class="nx">issues</span><span class="p">,</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span> <span class="k">instanceof</span> <span class="nx">GitDBError</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="na">ok</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="na">reason</span><span class="p">:</span> <span class="nx">error</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+      <span class="na">message</span><span class="p">:</span> <span class="nx">error</span><span class="p">.</span><span class="nx">message</span><span class="p">,</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
+
+  <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

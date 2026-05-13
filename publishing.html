@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Publishing on GitHub Pages | nGitDB</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Publishing on GitHub Pages" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<link rel="canonical" href="https://github.com/pages/Nuanst-GmbH/nGitDB/publishing.html" />
+<meta property="og:url" content="https://github.com/pages/Nuanst-GmbH/nGitDB/publishing.html" />
+<meta property="og:site_name" content="nGitDB" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Publishing on GitHub Pages" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Publishing on GitHub Pages","url":"https://github.com/pages/Nuanst-GmbH/nGitDB/publishing.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/pages/Nuanst-GmbH/nGitDB/assets/css/style.css?v=4b7d663b27acbe9e73fe2fe586bb6791ab6891bc">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/pages/Nuanst-GmbH/nGitDB/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://github.com/pages/Nuanst-GmbH/nGitDB/">nGitDB</a></h1>
+      
+
+      <h1 id="publishing-on-github-pages">Publishing on GitHub Pages</h1>
+
+<p>This documentation set is ready to publish from <code class="language-plaintext highlighter-rouge">docs/wiki</code> as the public site root.</p>
+
+<h2 id="github-pages-settings">GitHub Pages Settings</h2>
+
+<p>GitHub Pages branch-source publishing supports only <code class="language-plaintext highlighter-rouge">/</code> or <code class="language-plaintext highlighter-rouge">/docs</code> as the source folder. It does not support <code class="language-plaintext highlighter-rouge">/docs/wiki</code> directly.</p>
+
+<p>To publish only <code class="language-plaintext highlighter-rouge">docs/wiki</code>, configure Pages to use GitHub Actions. This repository includes <code class="language-plaintext highlighter-rouge">.github/workflows/pages.yml</code>, which builds <code class="language-plaintext highlighter-rouge">docs/wiki</code> with Jekyll and deploys the generated site.</p>
+
+<p>In the GitHub repository:</p>
+
+<ol>
+  <li>Open <code class="language-plaintext highlighter-rouge">Settings</code>.</li>
+  <li>Open <code class="language-plaintext highlighter-rouge">Pages</code>.</li>
+  <li>Under <code class="language-plaintext highlighter-rouge">Build and deployment</code>, set <code class="language-plaintext highlighter-rouge">Source</code> to <code class="language-plaintext highlighter-rouge">GitHub Actions</code>.</li>
+  <li>Push the <code class="language-plaintext highlighter-rouge">.github/workflows/pages.yml</code> workflow.</li>
+</ol>
+
+<p>The workflow builds from <code class="language-plaintext highlighter-rouge">docs/wiki</code>, so GitHub Pages will use <code class="language-plaintext highlighter-rouge">docs/wiki/index.md</code> as the site homepage and <code class="language-plaintext highlighter-rouge">docs/wiki/_config.yml</code> for the site title, description, Markdown settings, and theme.</p>
+
+<h2 id="site-structure">Site Structure</h2>
+
+<p>The public site entry point is:</p>
+
+<pre><code class="language-txt">docs/wiki/index.md
+</code></pre>
+
+<p>Wiki-style pages live next to it:</p>
+
+<pre><code class="language-txt">docs/wiki/getting-started.md
+docs/wiki/configuration.md
+docs/wiki/resource-model.md
+docs/wiki/patch-and-ownership.md
+docs/wiki/sessions-and-workflow.md
+docs/wiki/api-reference.md
+docs/wiki/error-handling.md
+docs/wiki/examples.md
+docs/wiki/roadmap-and-limits.md
+</code></pre>
+
+<h2 id="local-preview">Local Preview</h2>
+
+<p>GitHub renders Markdown automatically after Pages is enabled. A full local Jekyll preview is optional.</p>
+
+<p>For a quick content check, read <code class="language-plaintext highlighter-rouge">docs/wiki/index.md</code> and follow its relative links. For a closer GitHub Pages preview, install Jekyll locally and serve the <code class="language-plaintext highlighter-rouge">docs/wiki</code> directory.</p>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

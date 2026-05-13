@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>nGitDB | Git-native structured data layer for JSON resources in GitHub repositories.</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="nGitDB" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<link rel="canonical" href="https://github.com/pages/Nuanst-GmbH/nGitDB/" />
+<meta property="og:url" content="https://github.com/pages/Nuanst-GmbH/nGitDB/" />
+<meta property="og:site_name" content="nGitDB" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="nGitDB" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"nGitDB","name":"nGitDB","url":"https://github.com/pages/Nuanst-GmbH/nGitDB/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/pages/Nuanst-GmbH/nGitDB/assets/css/style.css?v=4b7d663b27acbe9e73fe2fe586bb6791ab6891bc">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/pages/Nuanst-GmbH/nGitDB/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+
+      <h1 id="ngitdb">nGitDB</h1>
+
+<p>nGitDB is a TypeScript library for teams that keep structured JSON data in Git repositories and need safe, reviewable updates.</p>
+
+<p>It gives internal tools a small workflow-aware API for reading resources, applying deterministic partial updates, validating staged changes, protecting human-owned fields, and preparing reviewable branch-based changes.</p>
+
+<h2 id="what-it-solves">What It Solves</h2>
+
+<p>Many internal tools eventually treat a Git repository as a source of truth for structured data. Raw file updates are easy to start with, but they become risky when humans and automation both edit the same documents.</p>
+
+<p>nGitDB focuses on the safety layer:</p>
+
+<ul>
+  <li>resource paths instead of raw file paths</li>
+  <li>patch-based updates instead of full-file replacement</li>
+  <li>field ownership rules to protect human-authored data</li>
+  <li>schema validation before commit artifacts are created</li>
+  <li>explicit sessions that isolate changes by branch name</li>
+  <li>pull request drafts that make review the promotion path</li>
+</ul>
+
+<h2 id="current-package-status">Current Package Status</h2>
+
+<p>The current implementation provides the V1 library surface and a local repository-backed workflow. It writes committed session artifacts under <code class="language-plaintext highlighter-rouge">.ngitdb/sessions/...</code> and returns pull request draft metadata.</p>
+
+<p>The product direction is GitHub-backed JSON workflows. Direct GitHub commit and pull request API integration is part of the V1 direction, but this package currently exposes the workflow primitives rather than a hosted service.</p>
+
+<h2 id="quick-example">Quick Example</h2>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createGitDB</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">ngitdb</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">createGitDB</span><span class="p">({</span>
+  <span class="na">repositoryRoot</span><span class="p">:</span> <span class="dl">"</span><span class="s2">/path/to/repo</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">resources</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">companies</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">fileName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">company.json</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">ownership</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">legalName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">human-owned</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">machine</span><span class="p">:</span> <span class="dl">"</span><span class="s2">machine-owned</span><span class="dl">"</span><span class="p">,</span>
+      <span class="p">},</span>
+      <span class="na">validate</span><span class="p">:</span> <span class="p">(</span><span class="nb">document</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="na">issues</span><span class="p">:</span> <span class="kr">string</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[];</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">document</span><span class="p">.</span><span class="nx">legalName</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">string</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">issues</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">"</span><span class="s2">legalName must be a string</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nx">issues</span><span class="p">;</span>
+      <span class="p">},</span>
+    <span class="p">},</span>
+  <span class="p">},</span>
+<span class="p">});</span>
+
+<span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">startSession</span><span class="p">(</span><span class="dl">"</span><span class="s2">acme-gmbh</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+  <span class="dl">"</span><span class="s2">machine.summary</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Industrial supplier with operations in Berlin</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">machine.lastEnrichedAt</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2026-04-21</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">});</span>
+
+<span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">"</span><span class="s2">Enrich company profile for acme-gmbh</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">pullRequest</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">createPullRequest</span><span class="p">({</span>
+  <span class="na">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Enrich acme-gmbh company profile</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="wiki">Wiki</h2>
+
+<ul>
+  <li><a href="/pages/Nuanst-GmbH/nGitDB/getting-started.html">Getting Started</a></li>
+  <li><a href="/pages/Nuanst-GmbH/nGitDB/configuration.html">Configuration</a></li>
+  <li><a href="/pages/Nuanst-GmbH/nGitDB/resource-model.html">Resource Model</a></li>
+  <li><a href="/pages/Nuanst-GmbH/nGitDB/patch-and-ownership.html">Patch and Ownership Model</a></li>
+  <li><a href="/pages/Nuanst-GmbH/nGitDB/sessions-and-workflow.html">Sessions and Review Workflow</a></li>
+  <li><a href="/pages/Nuanst-GmbH/nGitDB/api-reference.html">API Reference</a></li>
+  <li><a href="/pages/Nuanst-GmbH/nGitDB/error-handling.html">Error Handling</a></li>
+  <li><a href="/pages/Nuanst-GmbH/nGitDB/examples.html">Examples</a></li>
+  <li><a href="/pages/Nuanst-GmbH/nGitDB/prompt-recipes.html">Prompt Recipes</a></li>
+  <li><a href="/pages/Nuanst-GmbH/nGitDB/roadmap-and-limits.html">Roadmap and Limits</a></li>
+  <li><a href="/pages/Nuanst-GmbH/nGitDB/publishing.html">Publishing on GitHub Pages</a></li>
+</ul>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

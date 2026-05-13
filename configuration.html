@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Configuration | nGitDB</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Configuration" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<link rel="canonical" href="https://github.com/pages/Nuanst-GmbH/nGitDB/configuration.html" />
+<meta property="og:url" content="https://github.com/pages/Nuanst-GmbH/nGitDB/configuration.html" />
+<meta property="og:site_name" content="nGitDB" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Configuration" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Configuration","url":"https://github.com/pages/Nuanst-GmbH/nGitDB/configuration.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/pages/Nuanst-GmbH/nGitDB/assets/css/style.css?v=4b7d663b27acbe9e73fe2fe586bb6791ab6891bc">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/pages/Nuanst-GmbH/nGitDB/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://github.com/pages/Nuanst-GmbH/nGitDB/">nGitDB</a></h1>
+      
+
+      <h1 id="configuration">Configuration</h1>
+
+<p>nGitDB is configured through <code class="language-plaintext highlighter-rouge">createGitDB(config)</code>.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createGitDB</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">ngitdb</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">createGitDB</span><span class="p">({</span>
+  <span class="na">repositoryRoot</span><span class="p">:</span> <span class="dl">"</span><span class="s2">/path/to/repo</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">backend</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">github</span><span class="dl">"</span> <span class="p">},</span>
+  <span class="na">baseBranch</span><span class="p">:</span> <span class="dl">"</span><span class="s2">main</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">resourceRoot</span><span class="p">:</span> <span class="dl">"</span><span class="s2">data</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">resources</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">companies</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">fileName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">company.json</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">ownership</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">legalName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">human-owned</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">machine</span><span class="p">:</span> <span class="dl">"</span><span class="s2">machine-owned</span><span class="dl">"</span><span class="p">,</span>
+      <span class="p">},</span>
+      <span class="na">validate</span><span class="p">:</span> <span class="p">(</span><span class="nb">document</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">[],</span>
+    <span class="p">},</span>
+  <span class="p">},</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="backend"><code class="language-plaintext highlighter-rouge">backend</code></h2>
+
+<p>Optional backend selection.</p>
+
+<p>Default local backend:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">backend</span><span class="p">:</span> <span class="p">{</span> <span class="nl">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">local</span><span class="dl">"</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>Local mode writes session artifacts under <code class="language-plaintext highlighter-rouge">.ngitdb/sessions/...</code> and does not call GitHub.</p>
+
+<p>GitHub backend:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">backend</span><span class="p">:</span> <span class="p">{</span>
+  <span class="nl">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">github</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">owner</span><span class="p">:</span> <span class="dl">"</span><span class="s2">nuanst-gmbh</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">repo</span><span class="p">:</span> <span class="dl">"</span><span class="s2">nGitDB</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">token</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">GITHUB_TOKEN</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>When running in GitHub Actions, <code class="language-plaintext highlighter-rouge">owner</code> and <code class="language-plaintext highlighter-rouge">repo</code> can be omitted if <code class="language-plaintext highlighter-rouge">GITHUB_REPOSITORY</code> is set, and <code class="language-plaintext highlighter-rouge">token</code> can be omitted if <code class="language-plaintext highlighter-rouge">GITHUB_TOKEN</code> is set.</p>
+
+<p>GitHub Actions workflows need:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">permissions</span><span class="pi">:</span>
+  <span class="na">contents</span><span class="pi">:</span> <span class="s">write</span>
+  <span class="na">pull-requests</span><span class="pi">:</span> <span class="s">write</span>
+</code></pre></div></div>
+
+<h2 id="repositoryroot"><code class="language-plaintext highlighter-rouge">repositoryRoot</code></h2>
+
+<p>Absolute or process-relative path to the repository root used by the library.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">repositoryRoot</span><span class="p">:</span> <span class="dl">"</span><span class="s2">/path/to/repo</span><span class="dl">"</span>
+</code></pre></div></div>
+
+<h2 id="basebranch"><code class="language-plaintext highlighter-rouge">baseBranch</code></h2>
+
+<p>Optional base branch name used when creating pull request draft metadata.</p>
+
+<p>Default:</p>
+
+<pre><code class="language-txt">main
+</code></pre>
+
+<h2 id="resourceroot"><code class="language-plaintext highlighter-rouge">resourceRoot</code></h2>
+
+<p>Optional directory where resource collections live.</p>
+
+<p>Default:</p>
+
+<pre><code class="language-txt">data
+</code></pre>
+
+<p>With the default resource root, <code class="language-plaintext highlighter-rouge">companies/acme-gmbh</code> resolves to:</p>
+
+<pre><code class="language-txt">data/companies/acme-gmbh/company.json
+</code></pre>
+
+<h2 id="resources"><code class="language-plaintext highlighter-rouge">resources</code></h2>
+
+<p>Resource definitions keyed by collection name.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">resources</span><span class="p">:</span> <span class="p">{</span>
+  <span class="nl">companies</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">fileName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">company.json</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">ownership</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">legalName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">human-owned</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">machine</span><span class="p">:</span> <span class="dl">"</span><span class="s2">machine-owned</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="na">validate</span><span class="p">:</span> <span class="p">(</span><span class="nb">document</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">[],</span>
+  <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Each resource definition supports:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">fileName</code>: JSON file name inside each resource directory</li>
+  <li><code class="language-plaintext highlighter-rouge">ownership</code>: optional field ownership map</li>
+  <li><code class="language-plaintext highlighter-rouge">validate</code>: optional validator that returns issue strings</li>
+</ul>
+
+<h2 id="currentdate"><code class="language-plaintext highlighter-rouge">currentDate</code></h2>
+
+<p>Optional date override used for deterministic session branch names and tests.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">currentDate</span><span class="p">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(</span><span class="dl">"</span><span class="s2">2026-04-21T08:15:00.000Z</span><span class="dl">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

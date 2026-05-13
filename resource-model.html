@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Resource Model | nGitDB</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Resource Model" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<link rel="canonical" href="https://github.com/pages/Nuanst-GmbH/nGitDB/resource-model.html" />
+<meta property="og:url" content="https://github.com/pages/Nuanst-GmbH/nGitDB/resource-model.html" />
+<meta property="og:site_name" content="nGitDB" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Resource Model" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Resource Model","url":"https://github.com/pages/Nuanst-GmbH/nGitDB/resource-model.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/pages/Nuanst-GmbH/nGitDB/assets/css/style.css?v=4b7d663b27acbe9e73fe2fe586bb6791ab6891bc">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/pages/Nuanst-GmbH/nGitDB/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://github.com/pages/Nuanst-GmbH/nGitDB/">nGitDB</a></h1>
+      
+
+      <h1 id="resource-model">Resource Model</h1>
+
+<p>nGitDB uses canonical resource paths instead of exposing raw file paths to application code.</p>
+
+<h2 id="resource-path-format">Resource Path Format</h2>
+
+<p>Resource paths must use:</p>
+
+<pre><code class="language-txt">&lt;collection&gt;/&lt;id&gt;
+</code></pre>
+
+<p>Examples:</p>
+
+<pre><code class="language-txt">companies/acme-gmbh
+products/widget-1000
+locations/berlin-office
+</code></pre>
+
+<p>Paths with more or fewer segments are rejected.</p>
+
+<h2 id="file-resolution">File Resolution</h2>
+
+<p>By default, nGitDB maps:</p>
+
+<pre><code class="language-txt">&lt;collection&gt;/&lt;id&gt;
+</code></pre>
+
+<p>to:</p>
+
+<pre><code class="language-txt">data/&lt;collection&gt;/&lt;id&gt;/&lt;fileName&gt;
+</code></pre>
+
+<p>For this configuration:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nl">resourceRoot</span><span class="p">:</span> <span class="dl">"</span><span class="s2">data</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">resources</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nl">companies</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">fileName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">company.json</span><span class="dl">"</span><span class="p">,</span>
+    <span class="p">},</span>
+  <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>this resource path:</p>
+
+<pre><code class="language-txt">companies/acme-gmbh
+</code></pre>
+
+<p>resolves to:</p>
+
+<pre><code class="language-txt">data/companies/acme-gmbh/company.json
+</code></pre>
+
+<h2 id="json-documents">JSON Documents</h2>
+
+<p>V1 is JSON-only. <code class="language-plaintext highlighter-rouge">read(resourcePath)</code> parses the resolved file and returns a JSON object.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">company</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>If the file does not exist, nGitDB throws <code class="language-plaintext highlighter-rouge">ResourceNotFoundError</code>.</p>
+
+<h2 id="collection-definitions">Collection Definitions</h2>
+
+<p>Every collection must have a resource definition.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">resources</span><span class="p">:</span> <span class="p">{</span>
+  <span class="nl">companies</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">fileName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">company.json</span><span class="dl">"</span><span class="p">,</span>
+  <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If a resource path references an unknown collection, nGitDB throws <code class="language-plaintext highlighter-rouge">ResourceDefinitionError</code>.</p>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

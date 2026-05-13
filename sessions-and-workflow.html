@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Sessions and Review Workflow | nGitDB</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Sessions and Review Workflow" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<link rel="canonical" href="https://github.com/pages/Nuanst-GmbH/nGitDB/sessions-and-workflow.html" />
+<meta property="og:url" content="https://github.com/pages/Nuanst-GmbH/nGitDB/sessions-and-workflow.html" />
+<meta property="og:site_name" content="nGitDB" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Sessions and Review Workflow" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Sessions and Review Workflow","url":"https://github.com/pages/Nuanst-GmbH/nGitDB/sessions-and-workflow.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/pages/Nuanst-GmbH/nGitDB/assets/css/style.css?v=4b7d663b27acbe9e73fe2fe586bb6791ab6891bc">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/pages/Nuanst-GmbH/nGitDB/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://github.com/pages/Nuanst-GmbH/nGitDB/">nGitDB</a></h1>
+      
+
+      <h1 id="sessions-and-review-workflow">Sessions and Review Workflow</h1>
+
+<p>nGitDB makes write operations explicit by requiring an active session. A session represents an isolated branch-backed unit of work.</p>
+
+<h2 id="start-a-session">Start a Session</h2>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">startSession</span><span class="p">(</span><span class="dl">"</span><span class="s2">acme-gmbh</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Session branch names are deterministic and human-readable:</p>
+
+<pre><code class="language-txt">session/acme-gmbh-2026-04-21
+</code></pre>
+
+<p>Session keys are normalized by lowercasing, replacing unsafe characters with hyphens, and appending the session date.</p>
+
+<h2 id="session-state">Session State</h2>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">getCurrentSession</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>Session state contains:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">key</code>: original session key</li>
+  <li><code class="language-plaintext highlighter-rouge">branchName</code>: generated branch name</li>
+  <li><code class="language-plaintext highlighter-rouge">startedAt</code>: ISO timestamp</li>
+</ul>
+
+<h2 id="writes-require-a-session">Writes Require a Session</h2>
+
+<p><code class="language-plaintext highlighter-rouge">patch(...)</code>, <code class="language-plaintext highlighter-rouge">commit(...)</code>, and <code class="language-plaintext highlighter-rouge">createPullRequest(...)</code> require an active session.</p>
+
+<p>Calling them outside a session throws <code class="language-plaintext highlighter-rouge">SessionMisuseError</code>.</p>
+
+<h2 id="commit-behavior">Commit Behavior</h2>
+
+<p>With <code class="language-plaintext highlighter-rouge">backend: { type: "github" }</code>, <code class="language-plaintext highlighter-rouge">commit(message)</code> validates staged documents, creates one GitHub commit containing all staged resource files, and advances the session branch with a non-force ref update.</p>
+
+<p>With the default local backend, <code class="language-plaintext highlighter-rouge">commit(message)</code> validates staged documents and writes session artifacts under:</p>
+
+<pre><code class="language-txt">.ngitdb/sessions/&lt;branch-name&gt;/
+</code></pre>
+
+<p>The default branch files are left unchanged until the review branch is merged.</p>
+
+<h2 id="pull-requests">Pull Requests</h2>
+
+<p>With <code class="language-plaintext highlighter-rouge">backend: { type: "github" }</code>, <code class="language-plaintext highlighter-rouge">createPullRequest(metadata)</code> creates a pull request for the session branch. If an open pull request already exists for the same session branch and base branch, nGitDB updates its title and body and returns that pull request.</p>
+
+<p>With the local backend, <code class="language-plaintext highlighter-rouge">createPullRequest(metadata)</code> returns a pull request draft object:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nl">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Enrich acme-gmbh company profile</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">body</span><span class="p">:</span> <span class="dl">""</span><span class="p">,</span>
+  <span class="nx">headBranch</span><span class="p">:</span> <span class="dl">"</span><span class="s2">session/acme-gmbh-2026-04-21</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">baseBranch</span><span class="p">:</span> <span class="dl">"</span><span class="s2">main</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">committedResources</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

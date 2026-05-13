@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Examples | nGitDB</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Examples" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<link rel="canonical" href="https://github.com/pages/Nuanst-GmbH/nGitDB/examples.html" />
+<meta property="og:url" content="https://github.com/pages/Nuanst-GmbH/nGitDB/examples.html" />
+<meta property="og:site_name" content="nGitDB" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Examples" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Examples","url":"https://github.com/pages/Nuanst-GmbH/nGitDB/examples.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/pages/Nuanst-GmbH/nGitDB/assets/css/style.css?v=4b7d663b27acbe9e73fe2fe586bb6791ab6891bc">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/pages/Nuanst-GmbH/nGitDB/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://github.com/pages/Nuanst-GmbH/nGitDB/">nGitDB</a></h1>
+      
+
+      <h1 id="examples">Examples</h1>
+
+<h2 id="company-enrichment-workflow">Company Enrichment Workflow</h2>
+
+<p>This example updates only machine-owned enrichment fields while preserving human-owned company identity fields.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createGitDB</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">ngitdb</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">createGitDB</span><span class="p">({</span>
+  <span class="na">repositoryRoot</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span>
+  <span class="na">resources</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">companies</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">fileName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">company.json</span><span class="dl">"</span><span class="p">,</span>
+      <span class="na">ownership</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">legalName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">human-owned</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">machine</span><span class="p">:</span> <span class="dl">"</span><span class="s2">machine-owned</span><span class="dl">"</span><span class="p">,</span>
+      <span class="p">},</span>
+      <span class="na">validate</span><span class="p">:</span> <span class="p">(</span><span class="nb">document</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="na">issues</span><span class="p">:</span> <span class="kr">string</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[];</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">document</span><span class="p">.</span><span class="nx">legalName</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">string</span><span class="dl">"</span> <span class="o">||</span> <span class="nb">document</span><span class="p">.</span><span class="nx">legalName</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">issues</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">"</span><span class="s2">legalName must be a non-empty string</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+          <span class="nb">document</span><span class="p">.</span><span class="nx">machine</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span>
+          <span class="k">typeof</span> <span class="nb">document</span><span class="p">.</span><span class="nx">machine</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">object</span><span class="dl">"</span> <span class="o">||</span>
+          <span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">machine</span><span class="p">)</span>
+        <span class="p">)</span> <span class="p">{</span>
+          <span class="nx">issues</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">"</span><span class="s2">machine must be an object</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="nx">issues</span><span class="p">;</span>
+      <span class="p">},</span>
+    <span class="p">},</span>
+  <span class="p">},</span>
+<span class="p">});</span>
+
+<span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">startSession</span><span class="p">(</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+  <span class="dl">"</span><span class="s2">machine.summary</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Industrial supplier with operations in Berlin</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">machine.lastEnrichedAt</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2026-04-21</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">});</span>
+
+<span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">"</span><span class="s2">Enrich company profile for acme-gmbh</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">pullRequestDraft</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">createPullRequest</span><span class="p">({</span>
+  <span class="na">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Enrich acme-gmbh company profile</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">body</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Updates machine-owned enrichment fields.</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="rejecting-human-owned-writes">Rejecting Human-Owned Writes</h2>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">OwnershipViolationError</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">ngitdb</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">startSession</span><span class="p">(</span><span class="dl">"</span><span class="s2">rename-acme</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="k">try</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">legalName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">New Name GmbH</span><span class="dl">"</span><span class="p">,</span>
+  <span class="p">});</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span> <span class="k">instanceof</span> <span class="nx">OwnershipViolationError</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Blocked </span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">fieldPath</span><span class="p">}</span><span class="s2">: </span><span class="p">${</span><span class="nx">error</span><span class="p">.</span><span class="nx">owner</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="validating-before-commit">Validating Before Commit</h2>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">ValidationFailureError</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">ngitdb</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">startSession</span><span class="p">(</span><span class="dl">"</span><span class="s2">invalid-enrichment</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">machine</span><span class="p">:</span> <span class="dl">"</span><span class="s2">invalid</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">});</span>
+
+<span class="k">try</span> <span class="p">{</span>
+  <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">"</span><span class="s2">Try invalid update</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">error</span> <span class="k">instanceof</span> <span class="nx">ValidationFailureError</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">error</span><span class="p">.</span><span class="nx">issues</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

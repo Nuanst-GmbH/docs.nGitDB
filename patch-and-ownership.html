@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Patch and Ownership Model | nGitDB</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Patch and Ownership Model" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<link rel="canonical" href="https://github.com/pages/Nuanst-GmbH/nGitDB/patch-and-ownership.html" />
+<meta property="og:url" content="https://github.com/pages/Nuanst-GmbH/nGitDB/patch-and-ownership.html" />
+<meta property="og:site_name" content="nGitDB" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Patch and Ownership Model" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Patch and Ownership Model","url":"https://github.com/pages/Nuanst-GmbH/nGitDB/patch-and-ownership.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/pages/Nuanst-GmbH/nGitDB/assets/css/style.css?v=4b7d663b27acbe9e73fe2fe586bb6791ab6891bc">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/pages/Nuanst-GmbH/nGitDB/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://github.com/pages/Nuanst-GmbH/nGitDB/">nGitDB</a></h1>
+      
+
+      <h1 id="patch-and-ownership-model">Patch and Ownership Model</h1>
+
+<p>nGitDB uses deterministic patch documents as the primary write primitive. It does not expose a public full-file replacement API.</p>
+
+<h2 id="patch-shape">Patch Shape</h2>
+
+<p>A patch is a map of dot-separated field paths to JSON values.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+  <span class="dl">"</span><span class="s2">machine.summary</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Industrial supplier with operations in Berlin</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">machine.lastEnrichedAt</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2026-04-21</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Patch entries are applied in sorted field-path order so the same base document plus the same patch produces the same result.</p>
+
+<h2 id="nested-fields">Nested Fields</h2>
+
+<p>Dot-separated paths update nested object fields.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+  <span class="dl">"</span><span class="s2">machine.review.score</span><span class="dl">"</span><span class="p">:</span> <span class="mi">92</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>If intermediate objects do not exist, nGitDB creates them. If a patch tries to write beneath a scalar value, the patch fails.</p>
+
+<h2 id="ownership-states">Ownership States</h2>
+
+<p>Writable resources may define field ownership:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">ownership</span><span class="p">:</span> <span class="p">{</span>
+  <span class="nl">legalName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">human-owned</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">machine</span><span class="p">:</span> <span class="dl">"</span><span class="s2">machine-owned</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Supported states:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">human-owned</code></li>
+  <li><code class="language-plaintext highlighter-rouge">machine-owned</code></li>
+</ul>
+
+<p>Machine writes are only allowed against machine-owned fields.</p>
+
+<h2 id="ownership-lookup">Ownership Lookup</h2>
+
+<p>nGitDB checks the most specific field path first and then walks upward.</p>
+
+<p>For this ownership map:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">ownership</span><span class="p">:</span> <span class="p">{</span>
+  <span class="nl">legalName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">human-owned</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">machine</span><span class="p">:</span> <span class="dl">"</span><span class="s2">machine-owned</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>these patches are allowed:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="dl">"</span><span class="s2">machine.summary</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Updated summary</span><span class="dl">"</span><span class="p">,</span>
+  <span class="dl">"</span><span class="s2">machine.lastEnrichedAt</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2026-04-21</span><span class="dl">"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>this patch is rejected:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nl">legalName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">New Name GmbH</span><span class="dl">"</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="wildcard-ownership">Wildcard Ownership</h2>
+
+<p>The ownership map can use <code class="language-plaintext highlighter-rouge">*</code> as a fallback owner.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">ownership</span><span class="p">:</span> <span class="p">{</span>
+  <span class="dl">"</span><span class="s2">*</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">human-owned</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">machine</span><span class="p">:</span> <span class="dl">"</span><span class="s2">machine-owned</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This makes unlisted fields human-owned by default while still allowing writes beneath <code class="language-plaintext highlighter-rouge">machine</code>.</p>
+
+<h2 id="validation">Validation</h2>
+
+<p>Validation runs during <code class="language-plaintext highlighter-rouge">commit(message)</code>, not during <code class="language-plaintext highlighter-rouge">patch(...)</code>.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">validate</span><span class="p">:</span> <span class="p">(</span><span class="nb">document</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="na">issues</span><span class="p">:</span> <span class="kr">string</span><span class="p">[]</span> <span class="o">=</span> <span class="p">[];</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">document</span><span class="p">.</span><span class="nx">legalName</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">string</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">issues</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">"</span><span class="s2">legalName must be a string</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">issues</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If validation returns issues, commit creation is blocked with <code class="language-plaintext highlighter-rouge">ValidationFailureError</code>.</p>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

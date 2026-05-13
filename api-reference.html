@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>API Reference | nGitDB</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="API Reference" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<link rel="canonical" href="https://github.com/pages/Nuanst-GmbH/nGitDB/api-reference.html" />
+<meta property="og:url" content="https://github.com/pages/Nuanst-GmbH/nGitDB/api-reference.html" />
+<meta property="og:site_name" content="nGitDB" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="API Reference" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"API Reference","url":"https://github.com/pages/Nuanst-GmbH/nGitDB/api-reference.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/pages/Nuanst-GmbH/nGitDB/assets/css/style.css?v=4b7d663b27acbe9e73fe2fe586bb6791ab6891bc">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/pages/Nuanst-GmbH/nGitDB/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://github.com/pages/Nuanst-GmbH/nGitDB/">nGitDB</a></h1>
+      
+
+      <h1 id="api-reference">API Reference</h1>
+
+<h2 id="creategitdbconfig"><code class="language-plaintext highlighter-rouge">createGitDB(config)</code></h2>
+
+<p>Creates a <code class="language-plaintext highlighter-rouge">GitDB</code> instance.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">createGitDB</span><span class="p">(</span><span class="nx">config</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>See <a href="/pages/Nuanst-GmbH/nGitDB/configuration.html">Configuration</a> for the full config shape.</p>
+
+<h2 id="dbreadresourcepath"><code class="language-plaintext highlighter-rouge">db.read(resourcePath)</code></h2>
+
+<p>Reads and parses the JSON document for a resource.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nb">document</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">read</span><span class="p">(</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Returns:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">JsonObject</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>May throw:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">InvalidResourcePathError</code></li>
+  <li><code class="language-plaintext highlighter-rouge">ResourceDefinitionError</code></li>
+  <li><code class="language-plaintext highlighter-rouge">ResourceNotFoundError</code></li>
+</ul>
+
+<h2 id="dbstartsessionsessionkey"><code class="language-plaintext highlighter-rouge">db.startSession(sessionKey)</code></h2>
+
+<p>Starts a new isolated session and resets staged documents for the <code class="language-plaintext highlighter-rouge">GitDB</code> instance. In GitHub mode this creates or resumes the session branch.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">startSession</span><span class="p">(</span><span class="dl">"</span><span class="s2">acme-gmbh</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Returns:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">SessionState</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>Example return value:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nl">key</span><span class="p">:</span> <span class="dl">"</span><span class="s2">acme-gmbh</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">branchName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">session/acme-gmbh-2026-04-21</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">startedAt</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2026-04-21T08:15:00.000Z</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="dbgetcurrentsession"><code class="language-plaintext highlighter-rouge">db.getCurrentSession()</code></h2>
+
+<p>Returns the active session, or <code class="language-plaintext highlighter-rouge">undefined</code> if no session has been started.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">session</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">getCurrentSession</span><span class="p">();</span>
+</code></pre></div></div>
+
+<h2 id="dbpatchresourcepath-patchdocument"><code class="language-plaintext highlighter-rouge">db.patch(resourcePath, patchDocument)</code></h2>
+
+<p>Applies a deterministic partial update to a staged resource document.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">nextDocument</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+  <span class="dl">"</span><span class="s2">machine.summary</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Updated summary</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Returns:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">JsonObject</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>May throw:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">SessionMisuseError</code></li>
+  <li><code class="language-plaintext highlighter-rouge">InvalidResourcePathError</code></li>
+  <li><code class="language-plaintext highlighter-rouge">ResourceDefinitionError</code></li>
+  <li><code class="language-plaintext highlighter-rouge">ResourceNotFoundError</code></li>
+  <li><code class="language-plaintext highlighter-rouge">OwnershipViolationError</code></li>
+</ul>
+
+<h2 id="dbcommitmessage"><code class="language-plaintext highlighter-rouge">db.commit(message)</code></h2>
+
+<p>Validates staged documents and commits staged changes for the current session. In GitHub mode this creates one Git commit on the session branch. In local mode this writes commit artifacts.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">commit</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="dl">"</span><span class="s2">Enrich company profile for acme-gmbh</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Returns:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">CommitResult</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>Example return value:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nl">branchName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">session/acme-gmbh-2026-04-21</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">message</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Enrich company profile for acme-gmbh</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">committedResources</span><span class="p">:</span> <span class="p">[</span><span class="dl">"</span><span class="s2">companies/acme-gmbh</span><span class="dl">"</span><span class="p">],</span>
+  <span class="nx">commitFilePath</span><span class="p">:</span> <span class="dl">"</span><span class="s2">/repo/.ngitdb/sessions/session/acme-gmbh-2026-04-21/commit-0001.json</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">commitSha</span><span class="p">:</span> <span class="dl">"</span><span class="s2">abc123</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">commitUrl</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://api.github.com/repos/owner/repo/git/commits/abc123</span><span class="dl">"</span><span class="p">,</span>
+  <span class="nx">htmlUrl</span><span class="p">:</span> <span class="dl">"</span><span class="s2">https://github.com/owner/repo/commit/abc123</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>May throw:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">SessionMisuseError</code></li>
+  <li><code class="language-plaintext highlighter-rouge">ValidationFailureError</code></li>
+  <li><code class="language-plaintext highlighter-rouge">GitHubApiError</code></li>
+  <li><code class="language-plaintext highlighter-rouge">GitHubConflictError</code></li>
+</ul>
+
+<h2 id="dbcreatepullrequestmetadata"><code class="language-plaintext highlighter-rouge">db.createPullRequest(metadata)</code></h2>
+
+<p>Creates or updates a pull request from committed session changes in GitHub mode. In local mode it returns pull request draft metadata.</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">draft</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">createPullRequest</span><span class="p">({</span>
+  <span class="na">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Enrich acme-gmbh company profile</span><span class="dl">"</span><span class="p">,</span>
+  <span class="na">body</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Updates machine-owned enrichment fields.</span><span class="dl">"</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Returns:</p>
+
+<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Promise</span><span class="o">&lt;</span><span class="nx">PullRequestDraft</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>May throw:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">SessionMisuseError</code></li>
+  <li><code class="language-plaintext highlighter-rouge">GitHubApiError</code></li>
+</ul>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>

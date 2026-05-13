@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Prompt Recipes | nGitDB</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Prompt Recipes" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
+<link rel="canonical" href="https://github.com/pages/Nuanst-GmbH/nGitDB/prompt-recipes.html" />
+<meta property="og:url" content="https://github.com/pages/Nuanst-GmbH/nGitDB/prompt-recipes.html" />
+<meta property="og:site_name" content="nGitDB" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Prompt Recipes" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Prompt Recipes","url":"https://github.com/pages/Nuanst-GmbH/nGitDB/prompt-recipes.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/pages/Nuanst-GmbH/nGitDB/assets/css/style.css?v=4b7d663b27acbe9e73fe2fe586bb6791ab6891bc">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/pages/Nuanst-GmbH/nGitDB/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://github.com/pages/Nuanst-GmbH/nGitDB/">nGitDB</a></h1>
+      
+
+      <h1 id="prompt-recipes">Prompt Recipes</h1>
+
+<p>These prompts help consumers integrate nGitDB with AI coding assistants. They are written to steer the assistant toward nGitDB’s safety model: resource paths, sessions, <code class="language-plaintext highlighter-rouge">db.patch(...)</code>, ownership rules, validators, and tests.</p>
+
+<h2 id="codex-plugin">Codex Plugin</h2>
+
+<p>nGitDB also ships these workflows as Codex skills in the bundled plugin:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ngitdb-starter</code>: start a new TypeScript project with nGitDB</li>
+  <li><code class="language-plaintext highlighter-rouge">ngitdb-integrator</code>: add nGitDB to an existing JSON workflow</li>
+  <li><code class="language-plaintext highlighter-rouge">ngitdb-reviewer</code>: review an nGitDB integration for safety gaps</li>
+</ul>
+
+<p>The plugin source is included in the npm package under:</p>
+
+<pre><code class="language-txt">plugins/ngitdb
+</code></pre>
+
+<h2 id="add-ngitdb-to-a-new-project">Add nGitDB to a New Project</h2>
+
+<p>Use this when the project does not yet have an established JSON resource model.</p>
+
+<pre><code class="language-txt">You are setting up nGitDB in this TypeScript project.
+
+Goal:
+- Create an initial Git-backed JSON resource model.
+- Configure nGitDB with resource paths in the form &lt;collection&gt;/&lt;id&gt;.
+- Separate human-owned and machine-owned fields from the beginning.
+- Add validators for writable resources.
+- Add a small workflow that reads, starts a session, patches machine-owned fields, commits, and creates a pull request draft.
+- Add tests for read, patch, ownership rejection, validation failure, and session misuse.
+
+Please:
+1. Inspect the repository structure first.
+2. Propose a minimal data layout under data/&lt;collection&gt;/&lt;id&gt;/&lt;fileName&gt;.
+3. Create the nGitDB configuration using createGitDB(...).
+4. Use db.patch(...) for writes. Do not replace whole JSON files directly.
+5. Keep the default branch files unchanged during the session workflow.
+</code></pre>
+
+<h2 id="add-ngitdb-to-an-existing-project">Add nGitDB to an Existing Project</h2>
+
+<p>Use this when the app already stores JSON files in Git.</p>
+
+<pre><code class="language-txt">You are integrating nGitDB into this existing TypeScript project.
+
+Goal:
+- Preserve the existing JSON file structure where possible.
+- Configure nGitDB resource definitions for the existing collections.
+- Replace unsafe full-file JSON updates with db.patch(...).
+- Add ownership rules so machine updates cannot overwrite human-owned fields.
+- Add validators that block invalid staged documents before commit.
+- Add focused tests for the safety workflow.
+
+Please:
+1. Inspect the existing JSON files and write paths.
+2. Identify candidate resource paths in the form &lt;collection&gt;/&lt;id&gt;.
+3. Create or update the createGitDB configuration.
+4. Migrate one representative write path to startSession -&gt; patch -&gt; commit -&gt; createPullRequest.
+5. Add tests for read, machine-owned patch success, human-owned patch rejection, validation failure, and patch outside session.
+6. Avoid unrelated refactors.
+</code></pre>
+
+<h2 id="model-a-resource-collection">Model a Resource Collection</h2>
+
+<p>Use this to turn a JSON shape into an nGitDB resource definition.</p>
+
+<pre><code class="language-txt">Inspect this JSON document and design an nGitDB resource definition for it.
+
+Please provide:
+- the collection name
+- the fileName
+- the resource path convention
+- an ownership map with human-owned and machine-owned fields
+- a validator function that returns actionable issue strings
+- example allowed and rejected patches
+
+Assume machine writes should only update enrichment, analysis, or generated metadata fields.
+</code></pre>
+
+<h2 id="add-an-ai-enrichment-workflow">Add an AI Enrichment Workflow</h2>
+
+<p>Use this when automation writes derived data into existing documents.</p>
+
+<pre><code class="language-txt">Create an AI enrichment workflow using nGitDB.
+
+Rules:
+- AI-generated output must only be written under machine-owned fields.
+- Human-owned fields must be preserved.
+- Writes must happen inside an explicit session.
+- Use db.patch(...), not full-file replacement.
+- Commit must validate staged documents.
+- Pull request draft metadata must explain what changed.
+
+Add tests proving that human-owned fields cannot be overwritten.
+</code></pre>
+
+<h2 id="review-an-ngitdb-integration">Review an nGitDB Integration</h2>
+
+<p>Use this to audit an existing integration.</p>
+
+<pre><code class="language-txt">Review this nGitDB integration for safety issues.
+
+Look for:
+- full-file JSON replacement instead of db.patch(...)
+- patch calls outside sessions
+- missing or overly broad ownership rules
+- machine-owned fields that should be human-owned
+- missing validators
+- validation that returns vague errors
+- tests missing ownership, validation, and session misuse cases
+- pull request drafts without clear title or body
+
+Report findings with file and line references, ordered by severity.
+</code></pre>
+
+<h2 id="bad-prompt">Bad Prompt</h2>
+
+<pre><code class="language-txt">Update the company JSON file with the new AI summary.
+</code></pre>
+
+<p>This can push an assistant toward direct file replacement.</p>
+
+<h2 id="better-prompt">Better Prompt</h2>
+
+<pre><code class="language-txt">Use nGitDB to patch only the machine-owned summary field for companies/acme-gmbh.
+Start a session first, use db.patch(...), commit after validation, and create a pull request draft.
+Do not overwrite human-owned fields or replace the whole JSON file.
+</code></pre>
+
+
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  </body>
+</html>
