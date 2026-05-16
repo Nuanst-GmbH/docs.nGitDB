@@ -21,7 +21,7 @@
 {"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Publishing","url":"https://nuanst-gmbh.github.io/docs.nGitDB/publishing.html"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=7c827ac1318cd9fcecfc4c2ffef67f9a84c8eb3d">
+    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=3d4d4db7fc7ebab8840aca9ada408089b45e2e31">
     <link rel="shortcut icon" type="image/x-icon" href="/docs.nGitDB/favicon.ico">
     <style>
       .doc-nav {
@@ -121,10 +121,18 @@ npm pack <span class="nt">--dry-run</span>
 
 <p><code class="language-plaintext highlighter-rouge">npm run build:action</code> bundles and minifies the GitHub Action entrypoint at <code class="language-plaintext highlighter-rouge">dist/action.cjs</code>, then verifies it can be loaded by Node.</p>
 
-<p>Publish through <code class="language-plaintext highlighter-rouge">.github/workflows/npm-publish.yml</code>. The workflow requires repository secret <code class="language-plaintext highlighter-rouge">NPM_TOKEN</code> and publishes the public package from this private repository without npm provenance:</p>
+<p>Publish through <code class="language-plaintext highlighter-rouge">.github/workflows/npm-publish.yml</code>. The workflow requires repository secret <code class="language-plaintext highlighter-rouge">NPM_TOKEN</code> and publishes the public package from this private repository without npm provenance.</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gh workflow run npm-publish.yml <span class="nt">--ref</span> main
+<p>Publishing is release-driven and tag-versioned. Create a semver tag with a leading <code class="language-plaintext highlighter-rouge">v</code>, then publish a GitHub release from it:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git tag v0.1.1
+git push origin v0.1.1
+gh release create v0.1.1 <span class="nt">--title</span> <span class="s2">"v0.1.1"</span> <span class="nt">--notes</span> <span class="s2">"Release v0.1.1"</span>
 </code></pre></div></div>
+
+<p>The workflow sets <code class="language-plaintext highlighter-rouge">package.json</code> and <code class="language-plaintext highlighter-rouge">package-lock.json</code> to the tag version at publish time with <code class="language-plaintext highlighter-rouge">npm version --no-git-tag-version</code>. Regular PRs do not need package version bumps unless the committed baseline version should change for documentation or local development.</p>
+
+<p>Npm versions are immutable. If <code class="language-plaintext highlighter-rouge">@nuanst-one/ngitdb@&lt;tag-version&gt;</code> already exists, the workflow fails before building.</p>
 
 <p>Npm provenance requires the GitHub source repository to be public. If this repository becomes public later, restore <code class="language-plaintext highlighter-rouge">id-token: write</code> in the workflow permissions and publish with <code class="language-plaintext highlighter-rouge">npm publish --provenance --access public</code>.</p>
 

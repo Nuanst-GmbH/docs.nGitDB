@@ -20,11 +20,19 @@ npm pack --dry-run
 
 `npm run build:action` bundles and minifies the GitHub Action entrypoint at `dist/action.cjs`, then verifies it can be loaded by Node.
 
-Publish through `.github/workflows/npm-publish.yml`. The workflow requires repository secret `NPM_TOKEN` and publishes the public package from this private repository without npm provenance:
+Publish through `.github/workflows/npm-publish.yml`. The workflow requires repository secret `NPM_TOKEN` and publishes the public package from this private repository without npm provenance.
+
+Publishing is release-driven and tag-versioned. Create a semver tag with a leading `v`, then publish a GitHub release from it:
 
 ```bash
-gh workflow run npm-publish.yml --ref main
+git tag v0.1.1
+git push origin v0.1.1
+gh release create v0.1.1 --title "v0.1.1" --notes "Release v0.1.1"
 ```
+
+The workflow sets `package.json` and `package-lock.json` to the tag version at publish time with `npm version --no-git-tag-version`. Regular PRs do not need package version bumps unless the committed baseline version should change for documentation or local development.
+
+Npm versions are immutable. If `@nuanst-one/ngitdb@<tag-version>` already exists, the workflow fails before building.
 
 Npm provenance requires the GitHub source repository to be public. If this repository becomes public later, restore `id-token: write` in the workflow permissions and publish with `npm publish --provenance --access public`.
 
