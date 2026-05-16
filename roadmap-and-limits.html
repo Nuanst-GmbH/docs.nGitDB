@@ -21,7 +21,7 @@
 {"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Roadmap and Limits","url":"https://nuanst-gmbh.github.io/docs.nGitDB/roadmap-and-limits.html"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=374d8377123aed47adcdde4586d41ee55112f41f">
+    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=442fd86ff8758f1b755619504292aa56ba625c81">
     <link rel="shortcut icon" type="image/x-icon" href="/docs.nGitDB/favicon.ico">
     <style>
       .doc-nav {
@@ -117,7 +117,9 @@
 
 <h2 id="current-implementation-notes">Current Implementation Notes</h2>
 
-<p>The current package implements the workflow primitives using a local repository root:</p>
+<p>The current package implements local and GitHub-backed workflow primitives.</p>
+
+<p>Local mode:</p>
 
 <ul>
   <li>reads JSON files from the configured repository root</li>
@@ -126,11 +128,19 @@
   <li>returns pull request draft metadata</li>
 </ul>
 
-<p>Direct GitHub commit creation and direct GitHub pull request creation are product-direction items, not behavior provided by the current local workflow implementation.</p>
+<p>GitHub mode:</p>
+
+<ul>
+  <li>reads JSON files through the GitHub contents API</li>
+  <li>creates or resumes a session branch from the base branch</li>
+  <li>creates one Git commit for staged resource updates</li>
+  <li>advances the session branch with a non-force ref update</li>
+  <li>creates or updates a pull request for the session branch</li>
+</ul>
 
 <h2 id="v1-direction">V1 Direction</h2>
 
-<p>The V1 product direction is:</p>
+<p>The V1 direction remains:</p>
 
 <ul>
   <li>GitHub-backed JSON resources</li>

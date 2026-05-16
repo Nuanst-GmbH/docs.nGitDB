@@ -21,7 +21,7 @@
 {"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Configuration","url":"https://nuanst-gmbh.github.io/docs.nGitDB/configuration.html"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=374d8377123aed47adcdde4586d41ee55112f41f">
+    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=442fd86ff8758f1b755619504292aa56ba625c81">
     <link rel="shortcut icon" type="image/x-icon" href="/docs.nGitDB/favicon.ico">
     <style>
       .doc-nav {
@@ -151,6 +151,14 @@
   <span class="na">contents</span><span class="pi">:</span> <span class="s">write</span>
   <span class="na">pull-requests</span><span class="pi">:</span> <span class="s">write</span>
 </code></pre></div></div>
+
+<p>Workflow steps that execute nGitDB should expose the Actions token as an environment variable:</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">env</span><span class="pi">:</span>
+  <span class="na">GITHUB_TOKEN</span><span class="pi">:</span> <span class="s">$</span>
+</code></pre></div></div>
+
+<p>See <a href="/docs.nGitDB/github-actions.html">GitHub Actions</a> for a complete minimal workflow.</p>
 
 <h2 id="repositoryroot"><code class="language-plaintext highlighter-rouge">repositoryRoot</code></h2>
 

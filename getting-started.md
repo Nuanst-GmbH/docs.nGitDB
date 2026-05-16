@@ -88,6 +88,8 @@ const db = createGitDB({
 
 In GitHub Actions, `backend: { type: "github" }` uses `GITHUB_REPOSITORY` and `GITHUB_TOKEN` unless you pass `owner`, `repo`, and `token` explicitly.
 
+For the full CI recipe, including install path, token permissions, reusable workflow notes, and existing-resource limits, see [GitHub Actions](github-actions.md).
+
 ## Read a Resource
 
 ```ts

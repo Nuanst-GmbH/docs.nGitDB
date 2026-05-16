@@ -19,9 +19,7 @@ nGitDB focuses on the safety layer:
 
 ## Current Package Status
 
-The current implementation provides the V1 library surface and a local repository-backed workflow. It writes committed session artifacts under `.ngitdb/sessions/...` and returns pull request draft metadata.
-
-The product direction is GitHub-backed JSON workflows. Direct GitHub commit and pull request API integration is part of the V1 direction, but this package currently exposes the workflow primitives rather than a hosted service.
+The current implementation provides the V1 library surface with local and GitHub backends. Local mode writes committed session artifacts under `.ngitdb/sessions/...` and returns pull request draft metadata. GitHub mode creates or resumes session branches, creates commits with the Git database API, and creates or updates pull requests.
 
 ## Quick Example
 
@@ -68,6 +66,7 @@ const pullRequest = await db.createPullRequest({
 
 - [Getting Started](getting-started.md)
 - [Configuration](configuration.md)
+- [GitHub Actions](github-actions.md)
 - [Resource Model](resource-model.md)
 - [Patch and Ownership Model](patch-and-ownership.md)
 - [Sessions and Review Workflow](sessions-and-workflow.md)

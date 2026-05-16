@@ -21,7 +21,7 @@
 {"@context":"https://schema.org","@type":"WebSite","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"nGitDB","name":"nGitDB","url":"https://nuanst-gmbh.github.io/docs.nGitDB/"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=374d8377123aed47adcdde4586d41ee55112f41f">
+    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=442fd86ff8758f1b755619504292aa56ba625c81">
     <link rel="shortcut icon" type="image/x-icon" href="/docs.nGitDB/favicon.ico">
     <style>
       .doc-nav {
@@ -121,9 +121,7 @@
 
 <h2 id="current-package-status">Current Package Status</h2>
 
-<p>The current implementation provides the V1 library surface and a local repository-backed workflow. It writes committed session artifacts under <code class="language-plaintext highlighter-rouge">.ngitdb/sessions/...</code> and returns pull request draft metadata.</p>
-
-<p>The product direction is GitHub-backed JSON workflows. Direct GitHub commit and pull request API integration is part of the V1 direction, but this package currently exposes the workflow primitives rather than a hosted service.</p>
+<p>The current implementation provides the V1 library surface with local and GitHub backends. Local mode writes committed session artifacts under <code class="language-plaintext highlighter-rouge">.ngitdb/sessions/...</code> and returns pull request draft metadata. GitHub mode creates or resumes session branches, creates commits with the Git database API, and creates or updates pull requests.</p>
 
 <h2 id="quick-example">Quick Example</h2>
 
@@ -170,6 +168,7 @@
 <ul>
   <li><a href="/docs.nGitDB/getting-started.html">Getting Started</a></li>
   <li><a href="/docs.nGitDB/configuration.html">Configuration</a></li>
+  <li><a href="/docs.nGitDB/github-actions.html">GitHub Actions</a></li>
   <li><a href="/docs.nGitDB/resource-model.html">Resource Model</a></li>
   <li><a href="/docs.nGitDB/patch-and-ownership.html">Patch and Ownership Model</a></li>
   <li><a href="/docs.nGitDB/sessions-and-workflow.html">Sessions and Review Workflow</a></li>

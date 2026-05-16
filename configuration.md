@@ -56,6 +56,15 @@ permissions:
   pull-requests: write
 ```
 
+Workflow steps that execute nGitDB should expose the Actions token as an environment variable:
+
+```yaml
+env:
+  GITHUB_TOKEN: ${{ github.token }}
+```
+
+See [GitHub Actions](github-actions.md) for a complete minimal workflow.
+
 ## `repositoryRoot`
 
 Absolute or process-relative path to the repository root used by the library.

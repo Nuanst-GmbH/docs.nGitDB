@@ -15,18 +15,26 @@ nGitDB V1 is intentionally narrow. The goal is a dependable structured write lay
 
 ## Current Implementation Notes
 
-The current package implements the workflow primitives using a local repository root:
+The current package implements local and GitHub-backed workflow primitives.
+
+Local mode:
 
 - reads JSON files from the configured repository root
 - stages patched documents in memory
 - writes commit artifacts under `.ngitdb/sessions/<branch-name>/`
 - returns pull request draft metadata
 
-Direct GitHub commit creation and direct GitHub pull request creation are product-direction items, not behavior provided by the current local workflow implementation.
+GitHub mode:
+
+- reads JSON files through the GitHub contents API
+- creates or resumes a session branch from the base branch
+- creates one Git commit for staged resource updates
+- advances the session branch with a non-force ref update
+- creates or updates a pull request for the session branch
 
 ## V1 Direction
 
-The V1 product direction is:
+The V1 direction remains:
 
 - GitHub-backed JSON resources
 - branch-based session isolation
