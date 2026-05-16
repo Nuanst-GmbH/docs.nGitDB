@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Begin Jekyll SEO tag v2.8.0 -->
-<title>Publishing on GitHub Pages | nGitDB</title>
+<title>Publishing | nGitDB</title>
 <meta name="generator" content="Jekyll v3.10.0" />
-<meta property="og:title" content="Publishing on GitHub Pages" />
+<meta property="og:title" content="Publishing" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
 <meta property="og:description" content="Git-native structured data layer for JSON resources in GitHub repositories." />
@@ -16,12 +16,12 @@
 <meta property="og:site_name" content="nGitDB" />
 <meta property="og:type" content="website" />
 <meta name="twitter:card" content="summary" />
-<meta property="twitter:title" content="Publishing on GitHub Pages" />
+<meta property="twitter:title" content="Publishing" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Publishing on GitHub Pages","url":"https://nuanst-gmbh.github.io/docs.nGitDB/publishing.html"}</script>
+{"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Publishing","url":"https://nuanst-gmbh.github.io/docs.nGitDB/publishing.html"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=b88ab9c975c8133a62c5420d47ff7256d83990d4">
+    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=a64633898fe4ed540d89abe57836d03c6fc7227d">
     <link rel="shortcut icon" type="image/x-icon" href="/docs.nGitDB/favicon.ico">
     <style>
       .doc-nav {
@@ -98,7 +98,37 @@
 </nav>
 
 
-      <h1 id="publishing-on-github-pages">Publishing on GitHub Pages</h1>
+      <h1 id="publishing">Publishing</h1>
+
+<h2 id="npm-package">npm Package</h2>
+
+<p>The npm package build emits declarations and an obfuscated/minified JavaScript runtime:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm run build
+npm run build:action
+npm pack <span class="nt">--dry-run</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">npm run build</code>:</p>
+
+<ul>
+  <li>cleans <code class="language-plaintext highlighter-rouge">dist</code></li>
+  <li>emits <code class="language-plaintext highlighter-rouge">.d.ts</code> files from TypeScript</li>
+  <li>bundles <code class="language-plaintext highlighter-rouge">src/index.ts</code> to <code class="language-plaintext highlighter-rouge">dist/index.js</code></li>
+  <li>minifies and obfuscates the runtime bundle</li>
+  <li>imports the built package and runs a local nGitDB smoke test</li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">npm run build:action</code> bundles and minifies the GitHub Action entrypoint at <code class="language-plaintext highlighter-rouge">dist/action.cjs</code>, then verifies it can be loaded by Node.</p>
+
+<p>Publish through <code class="language-plaintext highlighter-rouge">.github/workflows/npm-publish.yml</code>. The workflow requires repository secret <code class="language-plaintext highlighter-rouge">NPM_TOKEN</code> and publishes with npm provenance:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gh workflow run npm-publish.yml <span class="nt">--ref</span> main
+</code></pre></div></div>
+
+<p>Obfuscation raises the cost of casual inspection. It does not make reverse engineering impossible.</p>
+
+<h2 id="github-pages">GitHub Pages</h2>
 
 <p>This documentation set is ready to publish from <code class="language-plaintext highlighter-rouge">docs/wiki</code> as the public site root.</p>
 

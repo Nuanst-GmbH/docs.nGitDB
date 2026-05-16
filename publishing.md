@@ -1,4 +1,34 @@
-# Publishing on GitHub Pages
+# Publishing
+
+## npm Package
+
+The npm package build emits declarations and an obfuscated/minified JavaScript runtime:
+
+```bash
+npm run build
+npm run build:action
+npm pack --dry-run
+```
+
+`npm run build`:
+
+- cleans `dist`
+- emits `.d.ts` files from TypeScript
+- bundles `src/index.ts` to `dist/index.js`
+- minifies and obfuscates the runtime bundle
+- imports the built package and runs a local nGitDB smoke test
+
+`npm run build:action` bundles and minifies the GitHub Action entrypoint at `dist/action.cjs`, then verifies it can be loaded by Node.
+
+Publish through `.github/workflows/npm-publish.yml`. The workflow requires repository secret `NPM_TOKEN` and publishes with npm provenance:
+
+```bash
+gh workflow run npm-publish.yml --ref main
+```
+
+Obfuscation raises the cost of casual inspection. It does not make reverse engineering impossible.
+
+## GitHub Pages
 
 This documentation set is ready to publish from `docs/wiki` as the public site root.
 
