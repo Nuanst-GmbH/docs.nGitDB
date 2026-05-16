@@ -63,6 +63,57 @@ Please:
 6. Avoid unrelated refactors.
 ```
 
+## Add the nGitDB GitHub Action to a Python Workflow
+
+Use this when Python generates derived data and GitHub Actions should publish reviewable JSON changes.
+
+```txt
+Add the nGitDB GitHub Action to this repository's CI workflow.
+
+Goal:
+- Keep the existing Python data generation step.
+- Make Python write an nGitDB batch JSON file with resources: [{ resourcePath, patch }].
+- Add a GitHub Actions step using nuanst-gmbh/nGitDB@v0.
+- Pass batch-file, session-key, commit-message, pr-title, pr-body, and resource-config.
+- Grant only contents: write and pull-requests: write.
+- Patch only machine-owned fields. Do not replace full JSON files.
+
+Please:
+1. Inspect the current Python workflow and JSON file layout.
+2. Identify resource paths in <collection>/<id> format.
+3. Add or update the Python batch writer.
+4. Add the nGitDB Action step after Python generation.
+5. Include ownership rules in resource-config.
+6. Add tests or a fixture proving the batch contains only machine-owned patches.
+```
+
+## Generate an nGitDB Batch File from Python Output
+
+Use this when Python already creates enriched records or merged JSON.
+
+```txt
+Create a Python batch writer for the nGitDB GitHub Action.
+
+Output schema:
+{
+  "resources": [
+    {
+      "resourcePath": "<collection>/<id>",
+      "patch": {
+        "<machine-owned-field-path>": <json-value>
+      }
+    }
+  ]
+}
+
+Rules:
+- Include machine-owned generated fields only.
+- Exclude human-owned identity, legal, approval, and manually curated fields.
+- Use resource paths, not raw file paths.
+- Fail if a record has no stable id.
+- Do not write full resource documents.
+```
+
 ## Model a Resource Collection
 
 Use this to turn a JSON shape into an nGitDB resource definition.
@@ -108,11 +159,13 @@ Review this nGitDB integration for safety issues.
 
 Look for:
 - full-file JSON replacement instead of db.patch(...)
+- GitHub Action batches containing full documents instead of resources: [{ resourcePath, patch }]
 - patch calls outside sessions
 - missing or overly broad ownership rules
 - machine-owned fields that should be human-owned
 - missing validators
 - validation that returns vague errors
+- workflows missing contents: write or pull-requests: write
 - tests missing ownership, validation, and session misuse cases
 - pull request drafts without clear title or body
 
@@ -130,7 +183,6 @@ This can push an assistant toward direct file replacement.
 ## Better Prompt
 
 ```txt
-Use nGitDB to patch only the machine-owned summary field for companies/acme-gmbh.
-Start a session first, use db.patch(...), commit after validation, and create a pull request draft.
-Do not overwrite human-owned fields or replace the whole JSON file.
+Generate an nGitDB Action batch file that patches only the machine-owned summary field for companies/acme-gmbh.
+Use resources: [{ resourcePath, patch }], do not overwrite human-owned fields, and do not replace the whole JSON file.
 ```

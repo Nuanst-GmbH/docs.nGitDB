@@ -21,7 +21,7 @@
 {"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Prompt Recipes","url":"https://nuanst-gmbh.github.io/docs.nGitDB/prompt-recipes.html"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=442fd86ff8758f1b755619504292aa56ba625c81">
+    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=b88ab9c975c8133a62c5420d47ff7256d83990d4">
     <link rel="shortcut icon" type="image/x-icon" href="/docs.nGitDB/favicon.ico">
     <style>
       .doc-nav {
@@ -162,6 +162,55 @@ Please:
 6. Avoid unrelated refactors.
 </code></pre>
 
+<h2 id="add-the-ngitdb-github-action-to-a-python-workflow">Add the nGitDB GitHub Action to a Python Workflow</h2>
+
+<p>Use this when Python generates derived data and GitHub Actions should publish reviewable JSON changes.</p>
+
+<pre><code class="language-txt">Add the nGitDB GitHub Action to this repository's CI workflow.
+
+Goal:
+- Keep the existing Python data generation step.
+- Make Python write an nGitDB batch JSON file with resources: [{ resourcePath, patch }].
+- Add a GitHub Actions step using nuanst-gmbh/nGitDB@v0.
+- Pass batch-file, session-key, commit-message, pr-title, pr-body, and resource-config.
+- Grant only contents: write and pull-requests: write.
+- Patch only machine-owned fields. Do not replace full JSON files.
+
+Please:
+1. Inspect the current Python workflow and JSON file layout.
+2. Identify resource paths in &lt;collection&gt;/&lt;id&gt; format.
+3. Add or update the Python batch writer.
+4. Add the nGitDB Action step after Python generation.
+5. Include ownership rules in resource-config.
+6. Add tests or a fixture proving the batch contains only machine-owned patches.
+</code></pre>
+
+<h2 id="generate-an-ngitdb-batch-file-from-python-output">Generate an nGitDB Batch File from Python Output</h2>
+
+<p>Use this when Python already creates enriched records or merged JSON.</p>
+
+<pre><code class="language-txt">Create a Python batch writer for the nGitDB GitHub Action.
+
+Output schema:
+{
+  "resources": [
+    {
+      "resourcePath": "&lt;collection&gt;/&lt;id&gt;",
+      "patch": {
+        "&lt;machine-owned-field-path&gt;": &lt;json-value&gt;
+      }
+    }
+  ]
+}
+
+Rules:
+- Include machine-owned generated fields only.
+- Exclude human-owned identity, legal, approval, and manually curated fields.
+- Use resource paths, not raw file paths.
+- Fail if a record has no stable id.
+- Do not write full resource documents.
+</code></pre>
+
 <h2 id="model-a-resource-collection">Model a Resource Collection</h2>
 
 <p>Use this to turn a JSON shape into an nGitDB resource definition.</p>
@@ -204,11 +253,13 @@ Add tests proving that human-owned fields cannot be overwritten.
 
 Look for:
 - full-file JSON replacement instead of db.patch(...)
+- GitHub Action batches containing full documents instead of resources: [{ resourcePath, patch }]
 - patch calls outside sessions
 - missing or overly broad ownership rules
 - machine-owned fields that should be human-owned
 - missing validators
 - validation that returns vague errors
+- workflows missing contents: write or pull-requests: write
 - tests missing ownership, validation, and session misuse cases
 - pull request drafts without clear title or body
 
@@ -224,9 +275,8 @@ Report findings with file and line references, ordered by severity.
 
 <h2 id="better-prompt">Better Prompt</h2>
 
-<pre><code class="language-txt">Use nGitDB to patch only the machine-owned summary field for companies/acme-gmbh.
-Start a session first, use db.patch(...), commit after validation, and create a pull request draft.
-Do not overwrite human-owned fields or replace the whole JSON file.
+<pre><code class="language-txt">Generate an nGitDB Action batch file that patches only the machine-owned summary field for companies/acme-gmbh.
+Use resources: [{ resourcePath, patch }], do not overwrite human-owned fields, and do not replace the whole JSON file.
 </code></pre>
 
 

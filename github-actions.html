@@ -21,7 +21,7 @@
 {"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"GitHub Actions","url":"https://nuanst-gmbh.github.io/docs.nGitDB/github-actions.html"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=442fd86ff8758f1b755619504292aa56ba625c81">
+    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=b88ab9c975c8133a62c5420d47ff7256d83990d4">
     <link rel="shortcut icon" type="image/x-icon" href="/docs.nGitDB/favicon.ico">
     <style>
       .doc-nav {
@@ -87,75 +87,33 @@
 
       <nav class="doc-nav" aria-label="Page navigation">
   
-    <a class="doc-nav__previous" href="/docs.nGitDB/publishing.html">&larr; Publishing on GitHub Pages</a>
+    <a class="doc-nav__previous" href="/docs.nGitDB/configuration.html">&larr; Configuration</a>
   
 
   <a class="doc-nav__home" href="/docs.nGitDB/">Home</a>
 
   
-    <span class="doc-nav__next doc-nav__disabled">End</span>
+    <a class="doc-nav__next" href="/docs.nGitDB/resource-model.html">Resource Model &rarr;</a>
   
 </nav>
 
 
       <h1 id="github-actions">GitHub Actions</h1>
 
-<p>This is the supported CI shape for consumer repositories that use nGitDB to turn generated JSON into reviewable pull requests.</p>
+<p>The preferred day-0 CI path is the nGitDB GitHub Action. It lets Python or any other generator write a JSON batch file, then nGitDB applies safe patches, commits to a session branch, and creates or updates one pull request.</p>
 
-<h2 id="install-path">Install Path</h2>
-
-<p>Install nGitDB as a package dependency in the consumer repository:</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm <span class="nb">install </span>ngitdb
-</code></pre></div></div>
-
-<p>Commit the resulting <code class="language-plaintext highlighter-rouge">package.json</code> and lockfile, then use <code class="language-plaintext highlighter-rouge">npm ci</code> in GitHub Actions. Cloning this repository directly from a private workflow is a development workflow for nGitDB itself, not the supported consumer install path.</p>
-
-<p>If your organization mirrors packages into a private registry or GitHub Packages, install the published package from that registry. The application import remains:</p>
-
-<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">createGitDB</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">ngitdb</span><span class="dl">"</span><span class="p">;</span>
-</code></pre></div></div>
-
-<h2 id="required-workflow-permissions">Required Workflow Permissions</h2>
-
-<p>The GitHub backend uses the GitHub REST API to read contents, create or resume a session branch, create a commit, update the branch ref, and create or update a pull request.</p>
-
-<p>Use the smallest required <code class="language-plaintext highlighter-rouge">GITHUB_TOKEN</code> permissions:</p>
+<h2 id="required-permissions">Required Permissions</h2>
 
 <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">permissions</span><span class="pi">:</span>
   <span class="na">contents</span><span class="pi">:</span> <span class="s">write</span>
   <span class="na">pull-requests</span><span class="pi">:</span> <span class="s">write</span>
 </code></pre></div></div>
 
-<p>The repository or organization Actions settings must also allow GitHub Actions to create pull requests.</p>
+<p>Expose the default token through normal Actions execution. The Action reads <code class="language-plaintext highlighter-rouge">GITHUB_REPOSITORY</code> and <code class="language-plaintext highlighter-rouge">GITHUB_TOKEN</code>.</p>
 
-<p>The nGitDB runtime reads <code class="language-plaintext highlighter-rouge">GITHUB_REPOSITORY</code> and <code class="language-plaintext highlighter-rouge">GITHUB_TOKEN</code> from the process environment when <code class="language-plaintext highlighter-rouge">owner</code>, <code class="language-plaintext highlighter-rouge">repo</code>, and <code class="language-plaintext highlighter-rouge">token</code> are omitted:</p>
+<p>If this repository is private, enable Actions access for same-organization client repositories before using <code class="language-plaintext highlighter-rouge">uses: nuanst-gmbh/nGitDB@v0</code>.</p>
 
-<div class="language-ts highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">createGitDB</span><span class="p">({</span>
-  <span class="na">repositoryRoot</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span>
-  <span class="na">backend</span><span class="p">:</span> <span class="p">{</span> <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">github</span><span class="dl">"</span> <span class="p">},</span>
-  <span class="na">baseBranch</span><span class="p">:</span> <span class="dl">"</span><span class="s2">main</span><span class="dl">"</span><span class="p">,</span>
-  <span class="na">resources</span><span class="p">:</span> <span class="p">{</span>
-    <span class="na">companies</span><span class="p">:</span> <span class="p">{</span>
-      <span class="na">fileName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">company.json</span><span class="dl">"</span><span class="p">,</span>
-      <span class="na">ownership</span><span class="p">:</span> <span class="p">{</span>
-        <span class="na">legalName</span><span class="p">:</span> <span class="dl">"</span><span class="s2">human-owned</span><span class="dl">"</span><span class="p">,</span>
-        <span class="na">machine</span><span class="p">:</span> <span class="dl">"</span><span class="s2">machine-owned</span><span class="dl">"</span><span class="p">,</span>
-      <span class="p">},</span>
-    <span class="p">},</span>
-  <span class="p">},</span>
-<span class="p">});</span>
-</code></pre></div></div>
-
-<p>In a workflow step, expose the Actions token explicitly:</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">env</span><span class="pi">:</span>
-  <span class="na">GITHUB_TOKEN</span><span class="pi">:</span> <span class="s">$</span>
-</code></pre></div></div>
-
-<h2 id="minimal-workflow">Minimal Workflow</h2>
-
-<p>This example assumes Python writes a merged JSON document to <code class="language-plaintext highlighter-rouge">tmp/company.json</code>, and a Node script applies the machine-owned fields through nGitDB.</p>
+<h2 id="minimal-action-workflow">Minimal Action Workflow</h2>
 
 <div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">name</span><span class="pi">:</span> <span class="s">Update company data</span>
 
@@ -177,29 +135,109 @@
         <span class="na">with</span><span class="pi">:</span>
           <span class="na">python-version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">3.12"</span>
 
-      <span class="pi">-</span> <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/setup-node@v4</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Build nGitDB batch</span>
+        <span class="na">run</span><span class="pi">:</span> <span class="s">python scripts/build_ngitdb_batch.py --output tmp/ngitdb.batch.json</span>
+
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Publish nGitDB updates</span>
+        <span class="na">id</span><span class="pi">:</span> <span class="s">ngitdb</span>
+        <span class="na">uses</span><span class="pi">:</span> <span class="s">nuanst-gmbh/nGitDB@v0</span>
         <span class="na">with</span><span class="pi">:</span>
-          <span class="na">node-version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">22"</span>
-          <span class="na">cache</span><span class="pi">:</span> <span class="s">npm</span>
-
-      <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span> <span class="s">npm ci</span>
-
-      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Build merged JSON</span>
-        <span class="na">run</span><span class="pi">:</span> <span class="s">python scripts/build_merged_json.py --output tmp/company.json</span>
-
-      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Create nGitDB pull request</span>
-        <span class="na">run</span><span class="pi">:</span> <span class="s">node scripts/apply-ngitdb-update.mjs tmp/company.json</span>
-        <span class="na">env</span><span class="pi">:</span>
-          <span class="na">GITHUB_TOKEN</span><span class="pi">:</span> <span class="s">$</span>
+          <span class="na">batch-file</span><span class="pi">:</span> <span class="s">tmp/ngitdb.batch.json</span>
+          <span class="na">session-key</span><span class="pi">:</span> <span class="s">company-enrichment</span>
+          <span class="na">commit-message</span><span class="pi">:</span> <span class="s">Update generated company data</span>
+          <span class="na">pr-title</span><span class="pi">:</span> <span class="s">Update generated company data</span>
+          <span class="na">pr-body</span><span class="pi">:</span> <span class="s">Generated by nGitDB.</span>
+          <span class="na">resource-config</span><span class="pi">:</span> <span class="pi">|</span>
+            <span class="s">{</span>
+              <span class="s">"baseBranch": "main",</span>
+              <span class="s">"resourceRoot": "data",</span>
+              <span class="s">"resources": {</span>
+                <span class="s">"companies": {</span>
+                  <span class="s">"fileName": "company.json",</span>
+                  <span class="s">"ownership": {</span>
+                    <span class="s">"legalName": "human-owned",</span>
+                    <span class="s">"machine": "machine-owned"</span>
+                  <span class="s">}</span>
+                <span class="s">}</span>
+              <span class="s">}</span>
+            <span class="s">}</span>
 </code></pre></div></div>
 
-<p>Minimal <code class="language-plaintext highlighter-rouge">scripts/apply-ngitdb-update.mjs</code>:</p>
+<h2 id="batch-file">Batch File</h2>
+
+<p>Python writes a batch file with patch operations only:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"resources"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"resourcePath"</span><span class="p">:</span><span class="w"> </span><span class="s2">"companies/acme-gmbh"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"patch"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"machine.summary"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Industrial supplier with operations in Berlin"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"machine.lastEnrichedAt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2026-05-16"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Each <code class="language-plaintext highlighter-rouge">resourcePath</code> uses <code class="language-plaintext highlighter-rouge">&lt;collection&gt;/&lt;id&gt;</code>. Each <code class="language-plaintext highlighter-rouge">patch</code> is passed to <code class="language-plaintext highlighter-rouge">db.patch(...)</code>, so ownership rules still block human-owned fields.</p>
+
+<h2 id="inputs">Inputs</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">batch-file</code>: path to the generated batch JSON file.</li>
+  <li><code class="language-plaintext highlighter-rouge">resource-config</code>: JSON with <code class="language-plaintext highlighter-rouge">baseBranch</code>, <code class="language-plaintext highlighter-rouge">resourceRoot</code>, and <code class="language-plaintext highlighter-rouge">resources</code>.</li>
+  <li><code class="language-plaintext highlighter-rouge">session-key</code>: stable key used to derive the session branch.</li>
+  <li><code class="language-plaintext highlighter-rouge">commit-message</code>: commit message for the generated update.</li>
+  <li><code class="language-plaintext highlighter-rouge">pr-title</code>: pull request title.</li>
+  <li><code class="language-plaintext highlighter-rouge">pr-body</code>: optional pull request body.</li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">resource-config</code> is JSON, so it supports ownership maps but not function validators. Use the TypeScript API route when validators are required in CI.</p>
+
+<h2 id="outputs">Outputs</h2>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">pull-request-number</code></li>
+  <li><code class="language-plaintext highlighter-rouge">pull-request-url</code></li>
+  <li><code class="language-plaintext highlighter-rouge">head-branch</code></li>
+  <li><code class="language-plaintext highlighter-rouge">committed-resources</code>: JSON array of resource paths.</li>
+  <li><code class="language-plaintext highlighter-rouge">created</code>: <code class="language-plaintext highlighter-rouge">true</code> when a new PR was opened.</li>
+  <li><code class="language-plaintext highlighter-rouge">updated</code>: <code class="language-plaintext highlighter-rouge">true</code> when an existing PR was updated.</li>
+</ul>
+
+<h2 id="existing-resources">Existing Resources</h2>
+
+<p>The Action patches existing resources. For V1, seed resource files before running automation:</p>
+
+<pre><code class="language-txt">data/companies/acme-gmbh/company.json
+</code></pre>
+
+<p>If the session branch already exists, nGitDB resumes it. If an open pull request already exists for the same session branch and base branch, nGitDB updates that pull request.</p>
+
+<h2 id="advanced-custom-node-integration">Advanced: Custom Node Integration</h2>
+
+<p>Use the TypeScript API directly when the client needs custom validators or richer workflow control.</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">steps</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/checkout@v4</span>
+
+  <span class="pi">-</span> <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/setup-node@v4</span>
+    <span class="na">with</span><span class="pi">:</span>
+      <span class="na">node-version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">22"</span>
+      <span class="na">cache</span><span class="pi">:</span> <span class="s">npm</span>
+
+  <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span> <span class="s">npm ci</span>
+
+  <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span> <span class="s">node scripts/apply-ngitdb-update.mjs tmp/company.json</span>
+    <span class="na">env</span><span class="pi">:</span>
+      <span class="na">GITHUB_TOKEN</span><span class="pi">:</span> <span class="s">$</span>
+</code></pre></div></div>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">readFile</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">node:fs/promises</span><span class="dl">"</span><span class="p">;</span>
 <span class="k">import</span> <span class="p">{</span> <span class="nx">createGitDB</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">ngitdb</span><span class="dl">"</span><span class="p">;</span>
 
-<span class="kd">const</span> <span class="nx">inputPath</span> <span class="o">=</span> <span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
-<span class="kd">const</span> <span class="nx">merged</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="k">await</span> <span class="nx">readFile</span><span class="p">(</span><span class="nx">inputPath</span><span class="p">,</span> <span class="dl">"</span><span class="s2">utf8</span><span class="dl">"</span><span class="p">));</span>
+<span class="kd">const</span> <span class="nx">merged</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="k">await</span> <span class="nx">readFile</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="dl">"</span><span class="s2">utf8</span><span class="dl">"</span><span class="p">));</span>
 
 <span class="kd">const</span> <span class="nx">db</span> <span class="o">=</span> <span class="nx">createGitDB</span><span class="p">({</span>
   <span class="na">repositoryRoot</span><span class="p">:</span> <span class="nx">process</span><span class="p">.</span><span class="nx">cwd</span><span class="p">(),</span>
@@ -217,19 +255,14 @@
         <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nb">document</span><span class="p">.</span><span class="nx">legalName</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">string</span><span class="dl">"</span> <span class="o">||</span> <span class="nb">document</span><span class="p">.</span><span class="nx">legalName</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
           <span class="nx">issues</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">"</span><span class="s2">legalName must be a non-empty string</span><span class="dl">"</span><span class="p">);</span>
         <span class="p">}</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">machine</span> <span class="o">===</span> <span class="kc">null</span> <span class="o">||</span> <span class="k">typeof</span> <span class="nb">document</span><span class="p">.</span><span class="nx">machine</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">object</span><span class="dl">"</span> <span class="o">||</span> <span class="nb">Array</span><span class="p">.</span><span class="nx">isArray</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">machine</span><span class="p">))</span> <span class="p">{</span>
-          <span class="nx">issues</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="dl">"</span><span class="s2">machine must be an object</span><span class="dl">"</span><span class="p">);</span>
-        <span class="p">}</span>
         <span class="k">return</span> <span class="nx">issues</span><span class="p">;</span>
       <span class="p">},</span>
     <span class="p">},</span>
   <span class="p">},</span>
 <span class="p">});</span>
 
-<span class="kd">const</span> <span class="nx">resourcePath</span> <span class="o">=</span> <span class="s2">`companies/</span><span class="p">${</span><span class="nx">merged</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
-
 <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">startSession</span><span class="p">(</span><span class="nx">merged</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
-<span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="nx">resourcePath</span><span class="p">,</span> <span class="p">{</span>
+<span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">patch</span><span class="p">(</span><span class="s2">`companies/</span><span class="p">${</span><span class="nx">merged</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span> <span class="p">{</span>
   <span class="na">machine</span><span class="p">:</span> <span class="nx">merged</span><span class="p">.</span><span class="nx">machine</span><span class="p">,</span>
 <span class="p">});</span>
 <span class="k">await</span> <span class="nx">db</span><span class="p">.</span><span class="nx">commit</span><span class="p">(</span><span class="s2">`Update company data for </span><span class="p">${</span><span class="nx">merged</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
@@ -239,78 +272,16 @@
 <span class="p">});</span>
 </code></pre></div></div>
 
-<h2 id="reusable-workflows">Reusable Workflows</h2>
-
-<p>For a reusable workflow, keep the same token contract: the called workflow must run with <code class="language-plaintext highlighter-rouge">contents: write</code> and <code class="language-plaintext highlighter-rouge">pull-requests: write</code>, and the Node step must receive <code class="language-plaintext highlighter-rouge">GITHUB_TOKEN</code>.</p>
-
-<p>Caller workflow:</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">name</span><span class="pi">:</span> <span class="s">Update company data</span>
-
-<span class="na">on</span><span class="pi">:</span>
-  <span class="na">workflow_dispatch</span><span class="pi">:</span>
-
-<span class="na">jobs</span><span class="pi">:</span>
-  <span class="na">update</span><span class="pi">:</span>
-    <span class="na">uses</span><span class="pi">:</span> <span class="s">your-org/automation/.github/workflows/ngitdb-update.yml@main</span>
-    <span class="na">permissions</span><span class="pi">:</span>
-      <span class="na">contents</span><span class="pi">:</span> <span class="s">write</span>
-      <span class="na">pull-requests</span><span class="pi">:</span> <span class="s">write</span>
-    <span class="na">secrets</span><span class="pi">:</span> <span class="s">inherit</span>
-</code></pre></div></div>
-
-<p>Called workflow:</p>
-
-<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">name</span><span class="pi">:</span> <span class="s">nGitDB update</span>
-
-<span class="na">on</span><span class="pi">:</span>
-  <span class="na">workflow_call</span><span class="pi">:</span>
-
-<span class="na">jobs</span><span class="pi">:</span>
-  <span class="na">update</span><span class="pi">:</span>
-    <span class="na">runs-on</span><span class="pi">:</span> <span class="s">ubuntu-latest</span>
-    <span class="na">permissions</span><span class="pi">:</span>
-      <span class="na">contents</span><span class="pi">:</span> <span class="s">write</span>
-      <span class="na">pull-requests</span><span class="pi">:</span> <span class="s">write</span>
-
-    <span class="na">steps</span><span class="pi">:</span>
-      <span class="pi">-</span> <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/checkout@v4</span>
-
-      <span class="pi">-</span> <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/setup-node@v4</span>
-        <span class="na">with</span><span class="pi">:</span>
-          <span class="na">node-version</span><span class="pi">:</span> <span class="s2">"</span><span class="s">22"</span>
-          <span class="na">cache</span><span class="pi">:</span> <span class="s">npm</span>
-
-      <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span> <span class="s">npm ci</span>
-
-      <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span> <span class="s">node scripts/apply-ngitdb-update.mjs tmp/company.json</span>
-        <span class="na">env</span><span class="pi">:</span>
-          <span class="na">GITHUB_TOKEN</span><span class="pi">:</span> <span class="s">$</span>
-</code></pre></div></div>
-
-<p>Use <code class="language-plaintext highlighter-rouge">secrets: inherit</code> only when the called workflow also needs caller secrets other than the default <code class="language-plaintext highlighter-rouge">GITHUB_TOKEN</code>. nGitDB itself does not require a custom secret when it can use <code class="language-plaintext highlighter-rouge">$</code> with the permissions above.</p>
-
-<h2 id="existing-versus-new-resources">Existing Versus New Resources</h2>
-
-<p><code class="language-plaintext highlighter-rouge">patch(resourcePath, patchDocument)</code> updates an existing JSON resource. With the GitHub backend, nGitDB reads the resource file from the active session branch before applying the patch. If the file is missing, the operation fails with <code class="language-plaintext highlighter-rouge">ResourceNotFoundError</code>.</p>
-
-<p>For V1, create seed resource files before using nGitDB updates, for example:</p>
-
-<pre><code class="language-txt">data/companies/acme-gmbh/company.json
-</code></pre>
-
-<p>After the file exists on the base branch, nGitDB can update it through session branches and pull requests. If a session branch already exists, <code class="language-plaintext highlighter-rouge">startSession(...)</code> resumes it instead of creating a duplicate branch; if an open pull request already exists for the same session branch and base branch, <code class="language-plaintext highlighter-rouge">createPullRequest(...)</code> updates that pull request.</p>
-
 
       <nav class="doc-nav" aria-label="Page navigation">
   
-    <a class="doc-nav__previous" href="/docs.nGitDB/publishing.html">&larr; Publishing on GitHub Pages</a>
+    <a class="doc-nav__previous" href="/docs.nGitDB/configuration.html">&larr; Configuration</a>
   
 
   <a class="doc-nav__home" href="/docs.nGitDB/">Home</a>
 
   
-    <span class="doc-nav__next doc-nav__disabled">End</span>
+    <a class="doc-nav__next" href="/docs.nGitDB/resource-model.html">Resource Model &rarr;</a>
   
 </nav>
 
