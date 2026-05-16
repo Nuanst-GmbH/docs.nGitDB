@@ -5,7 +5,7 @@ This guide shows the smallest useful nGitDB setup: one JSON resource type, one r
 ## Install
 
 ```bash
-npm install ngitdb
+npm install @nuanst-one/ngitdb
 ```
 
 For local development from this repository:
@@ -51,7 +51,7 @@ companies/acme-gmbh -> data/companies/acme-gmbh/company.json
 ## Create a Database Client
 
 ```ts
-import { createGitDB } from "ngitdb";
+import { createGitDB } from "@nuanst-one/ngitdb";
 
 const db = createGitDB({
   repositoryRoot: process.cwd(),

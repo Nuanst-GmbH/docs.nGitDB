@@ -137,7 +137,7 @@ steps:
 
 ```js
 import { readFile } from "node:fs/promises";
-import { createGitDB } from "ngitdb";
+import { createGitDB } from "@nuanst-one/ngitdb";
 
 const merged = JSON.parse(await readFile(process.argv[2], "utf8"));
 

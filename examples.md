@@ -5,7 +5,7 @@
 This example updates only machine-owned enrichment fields while preserving human-owned company identity fields.
 
 ```ts
-import { createGitDB } from "ngitdb";
+import { createGitDB } from "@nuanst-one/ngitdb";
 
 const db = createGitDB({
   repositoryRoot: process.cwd(),
@@ -55,7 +55,7 @@ const pullRequestDraft = await db.createPullRequest({
 ## Rejecting Human-Owned Writes
 
 ```ts
-import { OwnershipViolationError } from "ngitdb";
+import { OwnershipViolationError } from "@nuanst-one/ngitdb";
 
 await db.startSession("rename-acme");
 
@@ -73,7 +73,7 @@ try {
 ## Validating Before Commit
 
 ```ts
-import { ValidationFailureError } from "ngitdb";
+import { ValidationFailureError } from "@nuanst-one/ngitdb";
 
 await db.startSession("invalid-enrichment");
 

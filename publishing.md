@@ -2,7 +2,7 @@
 
 ## npm Package
 
-The npm package build emits declarations and an obfuscated/minified JavaScript runtime:
+The npm package is published as `@nuanst-one/ngitdb`. The build emits declarations and an obfuscated/minified JavaScript runtime:
 
 ```bash
 npm run build
@@ -20,11 +20,13 @@ npm pack --dry-run
 
 `npm run build:action` bundles and minifies the GitHub Action entrypoint at `dist/action.cjs`, then verifies it can be loaded by Node.
 
-Publish through `.github/workflows/npm-publish.yml`. The workflow requires repository secret `NPM_TOKEN` and publishes with npm provenance:
+Publish through `.github/workflows/npm-publish.yml`. The workflow requires repository secret `NPM_TOKEN` and publishes the public package from this private repository without npm provenance:
 
 ```bash
 gh workflow run npm-publish.yml --ref main
 ```
+
+Npm provenance requires the GitHub source repository to be public. If this repository becomes public later, restore `id-token: write` in the workflow permissions and publish with `npm publish --provenance --access public`.
 
 Obfuscation raises the cost of casual inspection. It does not make reverse engineering impossible.
 

@@ -24,7 +24,7 @@ The current implementation provides the V1 library surface with local and GitHub
 ## Quick Example
 
 ```ts
-import { createGitDB } from "ngitdb";
+import { createGitDB } from "@nuanst-one/ngitdb";
 
 const db = createGitDB({
   repositoryRoot: "/path/to/repo",

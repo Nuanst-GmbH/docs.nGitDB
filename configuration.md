@@ -3,7 +3,7 @@
 nGitDB is configured through `createGitDB(config)`.
 
 ```ts
-import { createGitDB } from "ngitdb";
+import { createGitDB } from "@nuanst-one/ngitdb";
 
 const db = createGitDB({
   repositoryRoot: "/path/to/repo",

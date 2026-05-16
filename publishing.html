@@ -21,7 +21,7 @@
 {"@context":"https://schema.org","@type":"WebPage","description":"Git-native structured data layer for JSON resources in GitHub repositories.","headline":"Publishing","url":"https://nuanst-gmbh.github.io/docs.nGitDB/publishing.html"}</script>
 <!-- End Jekyll SEO tag -->
 
-    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=a64633898fe4ed540d89abe57836d03c6fc7227d">
+    <link rel="stylesheet" href="/docs.nGitDB/assets/css/style.css?v=7c827ac1318cd9fcecfc4c2ffef67f9a84c8eb3d">
     <link rel="shortcut icon" type="image/x-icon" href="/docs.nGitDB/favicon.ico">
     <style>
       .doc-nav {
@@ -102,7 +102,7 @@
 
 <h2 id="npm-package">npm Package</h2>
 
-<p>The npm package build emits declarations and an obfuscated/minified JavaScript runtime:</p>
+<p>The npm package is published as <code class="language-plaintext highlighter-rouge">@nuanst-one/ngitdb</code>. The build emits declarations and an obfuscated/minified JavaScript runtime:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm run build
 npm run build:action
@@ -121,10 +121,12 @@ npm pack <span class="nt">--dry-run</span>
 
 <p><code class="language-plaintext highlighter-rouge">npm run build:action</code> bundles and minifies the GitHub Action entrypoint at <code class="language-plaintext highlighter-rouge">dist/action.cjs</code>, then verifies it can be loaded by Node.</p>
 
-<p>Publish through <code class="language-plaintext highlighter-rouge">.github/workflows/npm-publish.yml</code>. The workflow requires repository secret <code class="language-plaintext highlighter-rouge">NPM_TOKEN</code> and publishes with npm provenance:</p>
+<p>Publish through <code class="language-plaintext highlighter-rouge">.github/workflows/npm-publish.yml</code>. The workflow requires repository secret <code class="language-plaintext highlighter-rouge">NPM_TOKEN</code> and publishes the public package from this private repository without npm provenance:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gh workflow run npm-publish.yml <span class="nt">--ref</span> main
 </code></pre></div></div>
+
+<p>Npm provenance requires the GitHub source repository to be public. If this repository becomes public later, restore <code class="language-plaintext highlighter-rouge">id-token: write</code> in the workflow permissions and publish with <code class="language-plaintext highlighter-rouge">npm publish --provenance --access public</code>.</p>
 
 <p>Obfuscation raises the cost of casual inspection. It does not make reverse engineering impossible.</p>
 

@@ -8,7 +8,7 @@ import {
   OwnershipViolationError,
   SessionMisuseError,
   ValidationFailureError,
-} from "ngitdb";
+} from "@nuanst-one/ngitdb";
 ```
 
 ## Base Error
